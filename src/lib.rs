@@ -6,7 +6,7 @@ mod lexer;
 mod parser;
 
 pub fn interpret(source: &str) -> Result<(), ToyLangErr> {
-    println!("{}", source);
+    println!("{source}");
     let tokens = lexer::tokenize(source)?;
     let ast = parser::parse(tokens)?;
     interpreter::evaluate(ast)?;

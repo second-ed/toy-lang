@@ -6,3 +6,10 @@ edition = "2024"
 [dependencies]
 clap = { version = "4.6.7", features = ["derive"] }
 thiserror = "2.0.21"
+
+[lints.clippy]
+pedantic = { level = "deny", priority = -1 }
+complexity = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+correctness = { level = "deny", priority = -1 }
+missing_errors_doc = "allow"

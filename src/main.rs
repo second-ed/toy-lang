@@ -21,7 +21,7 @@ fn main() {
     let source = std::fs::read_to_string(cargo_root().join("toy/hello_world.toy"))
         .expect("Expected .toy file");
     match interpret(&source) {
-        Ok(_) => {}
-        Err(e) => eprintln!("{}", e),
+        Ok(()) => {}
+        Err(e) => eprintln!("{e}"),
     }
 }
