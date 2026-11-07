@@ -32,6 +32,9 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
             '{' => Token::LeftBrace,
             '}' => Token::RightBrace,
             ';' => Token::SemiColon,
+            '=' => Token::EqualSign,
+            '>' => Token::GreaterThan,
+            '<' => Token::LessThan,
             '"' => {
                 let content_start = start_idx + current.len_utf8();
                 let mut content_end = content_start;

@@ -1,0 +1,7 @@
+fn main() {
+    id = if 1 > 0 {
+        true
+    } else {
+        false
+    };
+}

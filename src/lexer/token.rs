@@ -22,6 +22,9 @@ pub(crate) enum Token<'src> {
     LeftBrace,
     RightBrace,
     SemiColon,
+    EqualSign,
+    GreaterThan,
+    LessThan,
     Keyword(Keyword),
     Identifier(&'src str),
     Number(&'src str),
@@ -34,6 +37,8 @@ pub(crate) enum Keyword {
     If,
     Else,
     Return,
+    True,
+    False,
 }
 
 impl Keyword {
@@ -43,6 +48,8 @@ impl Keyword {
             "if" => Some(Self::If),
             "else" => Some(Self::Else),
             "return" => Some(Self::Return),
+            "true" => Some(Self::True),
+            "false" => Some(Self::False),
             _ => None,
         }
     }
