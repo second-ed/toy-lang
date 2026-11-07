@@ -1,7 +1,9 @@
 use crate::{
     error::ToyLangErr,
-    lexer::token::{SpannedToken, Token},
+    lexer::position::Position,
+    lexer::token::{Keyword, SpannedToken, Token},
 };
+pub(crate) mod position;
 pub(crate) mod token;
 
 pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr> {
@@ -12,8 +14,6 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
     let mut chars = source.char_indices().peekable();
 
     while let Some((start_idx, current)) = chars.next() {
-        let start_col = col;
-
         if [' ', '\t'].contains(&current) {
             col += 1;
             continue;
@@ -23,6 +23,8 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
             col = 1;
             continue;
         }
+
+        let start_pos = Position::new(line, col);
 
         let token = match current {
             '(' => Token::LeftParen,
@@ -61,7 +63,10 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
             c if (c.is_ascii_alphabetic() || c == '_') => {
                 let mut end_idx = start_idx + current.len_utf16();
                 while let Some(&(next_idx, next_char)) = chars.peek() {
-                    if next_char.is_ascii_alphabetic() || next_char == '_' {
+                    if next_char.is_ascii_alphabetic()
+                        || next_char == '_'
+                        || next_char.is_ascii_digit()
+                    {
                         chars.next();
 
                         end_idx = next_idx + next_char.len_utf16();
@@ -71,7 +76,10 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
                     }
                 }
                 let text = &source[start_idx..end_idx];
-                Token::Identifier(text)
+                match Keyword::from_str(text) {
+                    Some(keyword) => Token::Keyword(keyword),
+                    None => Token::Identifier(text),
+                }
             }
             c if c.is_ascii_digit() => {
                 let mut end_idx = start_idx + current.len_utf16();
@@ -91,7 +99,9 @@ pub(crate) fn tokenize(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr
             _ => todo!("{} is not handled", current),
         };
 
-        tokens.push(SpannedToken::new(token, line, col));
+        let end_pos = Position::new(line, col + 1);
+
+        tokens.push(SpannedToken::new(token, start_pos, end_pos));
 
         col += 1;
     }

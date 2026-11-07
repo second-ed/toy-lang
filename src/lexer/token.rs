@@ -1,3 +1,5 @@
+use crate::lexer::position::{Position, Span};
+
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct SpannedToken<'src> {
     pub token: Token<'src>,
@@ -5,23 +7,11 @@ pub(crate) struct SpannedToken<'src> {
 }
 
 impl<'src> SpannedToken<'src> {
-    pub(crate) fn new(token: Token<'src>, line: u64, col: u64) -> Self {
+    pub(crate) fn new(token: Token<'src>, start_pos: Position, end_pos: Position) -> Self {
         Self {
             token,
-            span: Span::new(line, col),
+            span: Span::new(start_pos, end_pos),
         }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq)]
-pub(crate) struct Span {
-    pub(crate) line: u64,
-    pub(crate) col: u64,
-}
-
-impl Span {
-    pub(crate) fn new(line: u64, col: u64) -> Self {
-        Self { line, col }
     }
 }
 
@@ -31,7 +21,6 @@ pub(crate) enum Token<'src> {
     RightParen,
     LeftBrace,
     RightBrace,
-    DoubleQuote,
     SemiColon,
     Keyword(Keyword),
     Identifier(&'src str),
@@ -45,4 +34,16 @@ pub(crate) enum Keyword {
     If,
     Else,
     Return,
+}
+
+impl Keyword {
+    pub(crate) fn from_str(text: &str) -> Option<Self> {
+        match text {
+            "fn" => Some(Self::Fn),
+            "if" => Some(Self::If),
+            "else" => Some(Self::Else),
+            "return" => Some(Self::Return),
+            _ => None,
+        }
+    }
 }
