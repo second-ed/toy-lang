@@ -18,7 +18,7 @@ fn cargo_root() -> PathBuf {
 fn main() {
     // let args = Args::parse();
     // let source = std::fs::read_to_string(args.path).expect("Expected .toy file");
-    let source = std::fs::read_to_string(cargo_root().join("toy/if_else_branch.toy"))
+    let source = std::fs::read_to_string(cargo_root().join("toy/hello_world.toy"))
         .expect("Expected .toy file");
     match interpret(&source) {
         Ok(()) => {}

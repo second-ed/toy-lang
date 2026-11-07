@@ -1,8 +1,12 @@
 use crate::{
     error::ToyLangErr,
-    lexer::position::Position,
-    lexer::token::{Keyword, SpannedToken, Token},
+    lexer::{
+        keyword::Keyword,
+        position::Position,
+        token::{SpannedToken, Token},
+    },
 };
+pub(crate) mod keyword;
 pub(crate) mod position;
 pub(crate) mod token;
 
