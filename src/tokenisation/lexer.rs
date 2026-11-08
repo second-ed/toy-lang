@@ -1,6 +1,6 @@
 use crate::{
     error::ToyLangErr,
-    lexer::{
+    tokenisation::{
         keyword::Keyword,
         position::Position,
         token::{SpannedToken, Token},
@@ -8,15 +8,7 @@ use crate::{
 };
 use std::{iter::Peekable, str::CharIndices};
 
-pub(crate) mod keyword;
-pub(crate) mod position;
-pub(crate) mod token;
-
-pub(crate) fn tokenise(source: &str) -> Result<Vec<SpannedToken<'_>>, ToyLangErr> {
-    Lexer::new(source).tokenise()
-}
-
-struct Lexer<'src> {
+pub(crate) struct Lexer<'src> {
     source: &'src str,
     chars: Peekable<CharIndices<'src>>,
     line: u64,
@@ -24,7 +16,7 @@ struct Lexer<'src> {
 }
 
 impl<'src> Lexer<'src> {
-    fn new(source: &'src str) -> Self {
+    pub(crate) fn new(source: &'src str) -> Self {
         Self {
             source,
             chars: source.char_indices().peekable(),
@@ -33,18 +25,7 @@ impl<'src> Lexer<'src> {
         }
     }
 
-    fn consume_if_next(&mut self, expected: char) -> bool {
-        if let Some(&(_, next)) = self.chars.peek()
-            && next == expected
-        {
-            self.chars.next();
-            self.col += 1;
-            return true;
-        }
-        false
-    }
-
-    fn tokenise(mut self) -> Result<Vec<SpannedToken<'src>>, ToyLangErr> {
+    pub(crate) fn tokenise(mut self) -> Result<Vec<SpannedToken<'src>>, ToyLangErr> {
         let mut tokens: Vec<SpannedToken> = vec![];
 
         while let Some((start_idx, current)) = self.chars.next() {
@@ -97,6 +78,17 @@ impl<'src> Lexer<'src> {
         }
         dbg!(&tokens);
         Ok(tokens)
+    }
+
+    fn consume_if_next(&mut self, expected: char) -> bool {
+        if let Some(&(_, next)) = self.chars.peek()
+            && next == expected
+        {
+            self.chars.next();
+            self.col += 1;
+            return true;
+        }
+        false
     }
 
     fn scan_number(&mut self, start_idx: usize, current: char) -> Token<'src> {
