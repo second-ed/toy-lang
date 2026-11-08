@@ -1,0 +1,7 @@
+fn main() {
+    value = 0;
+
+    for i in range(10) {
+        value += i;
+    }
+}

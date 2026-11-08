@@ -43,29 +43,15 @@ impl<'src> Lexer<'src> {
 
             let token = match current {
                 // brackets
-                '(' => Token::LeftParen,
-                ')' => Token::RightParen,
-                '[' => Token::LeftBracket,
-                ']' => Token::RightBracket,
-                '{' => Token::LeftBrace,
-                '}' => Token::RightBrace,
+                '(' | ')' | '[' | ']' | '{' | '}' => Self::scan_bracket(current),
                 // operations
-                '+' => Token::Plus,
-                '-' => Token::Dash,
-                '/' => Token::Slash,
-                '*' => Token::Star,
+                '+' | '-' | '/' | '*' => self.scan_operator(current),
                 // punctuation
                 ':' => Token::Colon,
                 ';' => Token::SemiColon,
                 ',' => Token::Comma,
                 // comparison
-                '=' if self.consume_if_next('=') => Token::EqualEqual,
-                '!' if self.consume_if_next('=') => Token::NotEqual,
-                '=' => Token::Equal,
-                '>' if self.consume_if_next('=') => Token::GreaterEqual,
-                '<' if self.consume_if_next('=') => Token::LessEqual,
-                '>' => Token::GreaterThan,
-                '<' => Token::LessThan,
+                '!' | '=' | '>' | '<' => self.scan_comparison(current),
                 '"' => self.scan_string(start_idx, current)?,
                 c if (c.is_ascii_alphabetic() || c == '_') => self.scan_name(start_idx, current),
                 c if c.is_ascii_digit() => self.scan_number(start_idx, current),
@@ -89,6 +75,47 @@ impl<'src> Lexer<'src> {
             return true;
         }
         false
+    }
+
+    fn scan_bracket(current: char) -> Token<'src> {
+        match current {
+            '(' => Token::LeftParen,
+            ')' => Token::RightParen,
+            '[' => Token::LeftBracket,
+            ']' => Token::RightBracket,
+            '{' => Token::LeftBrace,
+            '}' => Token::RightBrace,
+            _ => unreachable!("Character is not a supported bracket type: {current}"),
+        }
+    }
+
+    fn scan_operator(&mut self, current: char) -> Token<'src> {
+        match current {
+            '+' if self.consume_if_next('=') => Token::PlusEqual,
+            '+' if self.consume_if_next('+') => Token::PlusPlus,
+            '+' => Token::Plus,
+            '-' if self.consume_if_next('>') => Token::ReturnAnnotation,
+            '-' if self.consume_if_next('=') => Token::DashEqual,
+            '-' => Token::Dash,
+            '/' if self.consume_if_next('=') => Token::SlashEqual,
+            '/' => Token::Slash,
+            '*' if self.consume_if_next('=') => Token::StarEqual,
+            '*' => Token::Star,
+            _ => unreachable!("Character is not a supported operator type: {current}"),
+        }
+    }
+
+    fn scan_comparison(&mut self, current: char) -> Token<'src> {
+        match current {
+            '=' if self.consume_if_next('=') => Token::EqualEqual,
+            '!' if self.consume_if_next('=') => Token::NotEqual,
+            '=' => Token::Equal,
+            '>' if self.consume_if_next('=') => Token::GreaterEqual,
+            '<' if self.consume_if_next('=') => Token::LessEqual,
+            '>' => Token::GreaterThan,
+            '<' => Token::LessThan,
+            _ => unreachable!("Character is not a supported comparison type: {current}"),
+        }
     }
 
     fn scan_number(&mut self, start_idx: usize, current: char) -> Token<'src> {
@@ -139,9 +166,6 @@ impl<'src> Lexer<'src> {
         let content_start = start_idx + current.len_utf8();
         let mut content_end = content_start;
         let mut closed = false;
-
-        // add one for the opening DoubleQuote
-        self.col += 1;
 
         while let Some(&(next_index, next_char)) = self.chars.peek() {
             self.chars.next();

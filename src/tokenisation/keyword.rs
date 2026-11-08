@@ -6,6 +6,8 @@ pub(crate) enum Keyword {
     Return,
     True,
     False,
+    For,
+    In,
 }
 
 impl Keyword {
@@ -17,6 +19,8 @@ impl Keyword {
             "return" => Some(Self::Return),
             "true" => Some(Self::True),
             "false" => Some(Self::False),
+            "for" => Some(Self::For),
+            "in" => Some(Self::In),
             _ => None,
         }
     }

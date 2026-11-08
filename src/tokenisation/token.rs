@@ -29,9 +29,15 @@ pub(crate) enum Token<'src> {
     RightBrace,
     // operations
     Plus,
+    PlusEqual,
+    PlusPlus,
     Dash,
+    DashEqual,
+    ReturnAnnotation,
     Slash,
+    SlashEqual,
     Star,
+    StarEqual,
     // punctuation
     Colon,
     SemiColon,
