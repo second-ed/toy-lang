@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Position {
     line: u64,
     col: u64,
@@ -10,7 +10,7 @@ impl Position {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Span {
     pub(crate) start_pos: Position,
     pub(crate) end_pos: Position,

@@ -3,7 +3,7 @@ use crate::tokenisation::{
     position::{Position, Span},
 };
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SpannedToken<'src> {
     pub token: Token<'src>,
     pub span: Span,
@@ -18,7 +18,7 @@ impl<'src> SpannedToken<'src> {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum Token<'src> {
     // brackets
     LeftParen,

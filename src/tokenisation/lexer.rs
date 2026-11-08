@@ -62,7 +62,6 @@ impl<'src> Lexer<'src> {
             let end_pos = Position::new(self.line, self.col);
             tokens.push(SpannedToken::new(token, start_pos, end_pos));
         }
-        dbg!(&tokens);
         Ok(tokens)
     }
 
