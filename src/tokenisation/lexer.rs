@@ -187,3 +187,353 @@ impl<'src> Lexer<'src> {
         Ok(Token::StringLiteral(text))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::Lexer;
+    use crate::tokenisation::{
+        keyword::Keyword,
+        position::Position,
+        token::{SpannedToken, Token},
+    };
+    use test_case::test_case;
+
+    fn case_1() -> Vec<(&'static str, Vec<SpannedToken<'static>>)> {
+        let input = "i = 0;";
+        let output = vec![
+            SpannedToken::new(Token::Name("i"), Position::new(1, 1), Position::new(1, 2)),
+            SpannedToken::new(Token::Equal, Position::new(1, 3), Position::new(1, 4)),
+            SpannedToken::new(
+                Token::Integer("0"),
+                Position::new(1, 5),
+                Position::new(1, 6),
+            ),
+            SpannedToken::new(Token::SemiColon, Position::new(1, 6), Position::new(1, 7)),
+        ];
+        vec![(input, output)]
+    }
+
+    #[allow(clippy::too_many_lines)]
+    fn token_test_cases() -> Vec<(&'static str, Vec<SpannedToken<'static>>)> {
+        vec![
+            ("", vec![]),
+            (
+                "()",
+                vec![
+                    SpannedToken::new(Token::LeftParen, Position::new(1, 1), Position::new(1, 2)),
+                    SpannedToken::new(Token::RightParen, Position::new(1, 2), Position::new(1, 3)),
+                ],
+            ),
+            (
+                "[]",
+                vec![
+                    SpannedToken::new(Token::LeftBracket, Position::new(1, 1), Position::new(1, 2)),
+                    SpannedToken::new(
+                        Token::RightBracket,
+                        Position::new(1, 2),
+                        Position::new(1, 3),
+                    ),
+                ],
+            ),
+            (
+                "{}",
+                vec![
+                    SpannedToken::new(Token::LeftBrace, Position::new(1, 1), Position::new(1, 2)),
+                    SpannedToken::new(Token::RightBrace, Position::new(1, 2), Position::new(1, 3)),
+                ],
+            ),
+            (
+                "+",
+                vec![SpannedToken::new(
+                    Token::Plus,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "+=",
+                vec![SpannedToken::new(
+                    Token::PlusEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "++",
+                vec![SpannedToken::new(
+                    Token::PlusPlus,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "-",
+                vec![SpannedToken::new(
+                    Token::Dash,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "-=",
+                vec![SpannedToken::new(
+                    Token::DashEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "->",
+                vec![SpannedToken::new(
+                    Token::ReturnAnnotation,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "/",
+                vec![SpannedToken::new(
+                    Token::Slash,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "/=",
+                vec![SpannedToken::new(
+                    Token::SlashEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "*",
+                vec![SpannedToken::new(
+                    Token::Star,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "*=",
+                vec![SpannedToken::new(
+                    Token::StarEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                ":",
+                vec![SpannedToken::new(
+                    Token::Colon,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                ";",
+                vec![SpannedToken::new(
+                    Token::SemiColon,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                ",",
+                vec![SpannedToken::new(
+                    Token::Comma,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "=",
+                vec![SpannedToken::new(
+                    Token::Equal,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "==",
+                vec![SpannedToken::new(
+                    Token::EqualEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "!=",
+                vec![SpannedToken::new(
+                    Token::NotEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                ">",
+                vec![SpannedToken::new(
+                    Token::GreaterThan,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "<",
+                vec![SpannedToken::new(
+                    Token::LessThan,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                ">=",
+                vec![SpannedToken::new(
+                    Token::GreaterEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "<=",
+                vec![SpannedToken::new(
+                    Token::LessEqual,
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "fn",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::Fn),
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "if",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::If),
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "else",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::Else),
+                    Position::new(1, 1),
+                    Position::new(1, 5),
+                )],
+            ),
+            (
+                "return",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::Return),
+                    Position::new(1, 1),
+                    Position::new(1, 7),
+                )],
+            ),
+            (
+                "true",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::True),
+                    Position::new(1, 1),
+                    Position::new(1, 5),
+                )],
+            ),
+            (
+                "false",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::False),
+                    Position::new(1, 1),
+                    Position::new(1, 6),
+                )],
+            ),
+            (
+                "for",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::For),
+                    Position::new(1, 1),
+                    Position::new(1, 4),
+                )],
+            ),
+            (
+                "in",
+                vec![SpannedToken::new(
+                    Token::Keyword(Keyword::In),
+                    Position::new(1, 1),
+                    Position::new(1, 3),
+                )],
+            ),
+            (
+                "print(\"Hello World\")",
+                vec![
+                    SpannedToken::new(
+                        Token::Name("print"),
+                        Position::new(1, 1),
+                        Position::new(1, 6),
+                    ),
+                    SpannedToken::new(Token::LeftParen, Position::new(1, 6), Position::new(1, 7)),
+                    SpannedToken::new(
+                        Token::StringLiteral("Hello World"),
+                        Position::new(1, 7),
+                        Position::new(1, 20),
+                    ),
+                    SpannedToken::new(
+                        Token::RightParen,
+                        Position::new(1, 20),
+                        Position::new(1, 21),
+                    ),
+                ],
+            ),
+            (
+                "0",
+                vec![SpannedToken::new(
+                    Token::Integer("0"),
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
+                "0.0",
+                vec![SpannedToken::new(
+                    Token::Float("0.0"),
+                    Position::new(1, 1),
+                    Position::new(1, 4),
+                )],
+            ),
+        ]
+    }
+
+    #[test_case(token_test_cases())]
+    #[test_case(case_1())]
+    fn test_tokenise(inputs: Vec<(&'static str, Vec<SpannedToken<'static>>)>) {
+        let mismatches: Vec<String> = inputs
+            .into_iter()
+            .enumerate()
+            .filter_map(
+                |(case_number, (source, expected))| match Lexer::new(source).tokenise() {
+                    Ok(actual) if actual == expected => None,
+
+                    Ok(actual) => Some(format!(
+                        "Case {case_number} failed for {source:?}\n\
+                     Expected:\n{expected:#?}\n\
+                     Actual:\n{actual:#?}"
+                    )),
+
+                    Err(error) => Some(format!(
+                        "Case {case_number} failed for {source:?}\n\
+                     Lexer error: {error:?}"
+                    )),
+                },
+            )
+            .collect();
+
+        assert_eq!(
+            mismatches,
+            Vec::<String>::new(),
+            "Tokenisation mismatches occurred"
+        );
+    }
+}
