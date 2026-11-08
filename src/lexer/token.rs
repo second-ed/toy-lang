@@ -20,16 +20,34 @@ impl<'src> SpannedToken<'src> {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Token<'src> {
+    // brackets
     LeftParen,
     RightParen,
+    LeftBracket,
+    RightBracket,
     LeftBrace,
     RightBrace,
+    // operations
+    Plus,
+    Dash,
+    Slash,
+    Star,
+    // punctuation
+    Colon,
     SemiColon,
-    EqualSign,
+    Comma,
+    // comparison
+    Equal,
+    EqualEqual,
+    NotEqual,
     GreaterThan,
     LessThan,
+    GreaterEqual,
+    LessEqual,
+    // types
     Keyword(Keyword),
-    Identifier(&'src str),
-    Number(&'src str),
+    Name(&'src str),
+    Integer(&'src str),
+    Float(&'src str),
     StringLiteral(&'src str),
 }

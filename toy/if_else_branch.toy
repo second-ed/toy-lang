@@ -1,5 +1,5 @@
 fn main() {
-    id = if 1 > 0 {
+    id = if 1 > 0.0 {
         true
     } else {
         false
