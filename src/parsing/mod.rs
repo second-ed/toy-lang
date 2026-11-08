@@ -1,5 +1,6 @@
 use crate::{error::ToyLangErr, parsing::ast::Ast, tokenisation::token::SpannedToken};
 pub(crate) mod ast;
+pub(crate) mod parser;
 
 pub(crate) fn parse(_tokens: Vec<SpannedToken>) -> Result<Ast, ToyLangErr> {
     Ok(Ast {})
