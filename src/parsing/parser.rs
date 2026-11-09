@@ -1,7 +1,7 @@
-use crate::tokenisation::token::SpannedToken;
+use crate::{error::ToyLangErr, parsing::ast::Ast, tokenisation::token::SpannedToken};
 
 #[derive(Debug, PartialEq)]
-struct Parser<'src> {
+pub(crate) struct Parser<'src> {
     tokens: Vec<SpannedToken<'src>>,
     idx: usize,
 }
@@ -19,6 +19,10 @@ impl<'src> Parser<'src> {
         let token = self.tokens.get(self.idx)?.clone();
         self.idx += 1;
         Some(token)
+    }
+
+    pub(crate) fn parse(self) -> Result<Ast, ToyLangErr> {
+        Ok(Ast {})
     }
 }
 

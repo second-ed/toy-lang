@@ -38,7 +38,9 @@ pub(crate) enum Token<'src> {
     SlashEqual,
     Star,
     StarEqual,
+    Modulo,
     // punctuation
+    Dot,
     Colon,
     SemiColon,
     Comma,

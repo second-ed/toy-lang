@@ -45,8 +45,9 @@ impl<'src> Lexer<'src> {
                 // brackets
                 '(' | ')' | '[' | ']' | '{' | '}' => Self::scan_bracket(current),
                 // operations
-                '+' | '-' | '/' | '*' => self.scan_operator(current),
+                '+' | '-' | '/' | '*' | '%' => self.scan_operator(current),
                 // punctuation
+                '.' => Token::Dot,
                 ':' => Token::Colon,
                 ';' => Token::SemiColon,
                 ',' => Token::Comma,
@@ -62,6 +63,7 @@ impl<'src> Lexer<'src> {
             let end_pos = Position::new(self.line, self.col);
             tokens.push(SpannedToken::new(token, start_pos, end_pos));
         }
+        dbg!(&tokens);
         Ok(tokens)
     }
 
@@ -100,6 +102,7 @@ impl<'src> Lexer<'src> {
             '/' => Token::Slash,
             '*' if self.consume_if_next('=') => Token::StarEqual,
             '*' => Token::Star,
+            '%' => Token::Modulo,
             _ => unreachable!("Character is not a supported operator type: {current}"),
         }
     }
@@ -314,11 +317,27 @@ mod tests {
                 )],
             ),
             (
+                "%",
+                vec![SpannedToken::new(
+                    Token::Modulo,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
+                )],
+            ),
+            (
                 "*=",
                 vec![SpannedToken::new(
                     Token::StarEqual,
                     Position::new(1, 1),
                     Position::new(1, 3),
+                )],
+            ),
+            (
+                ".",
+                vec![SpannedToken::new(
+                    Token::Dot,
+                    Position::new(1, 1),
+                    Position::new(1, 2),
                 )],
             ),
             (

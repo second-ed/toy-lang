@@ -1,7 +1,6 @@
 fn main() {
-    value = 0;
-
-    for i in range(10) {
-        value += i;
-    }
+    images = ["url_1", "url_2"]
+        .map(download_image)
+        .else(retry)
+        .or(default);
 }
